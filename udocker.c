@@ -46,16 +46,17 @@ int main(int argc, char **argv)
  struct passwd *pw = getpwuid(uid);
  const char *homedir = pw->pw_dir;
  printf("uid:gid %d:%d %s %d\n", getuid(), getgid(), homedir, argc);
- seteuid(getuid());
- setegid(getgid());
   
+ /* Set uid, gid, euid and egid to root */
+ setegid(0);
+ seteuid(0);
+ setgid(0);
+ setuid(0);
+
 /*------------------------------------------------------*/
 
  int c;
- char **my_argv;
- int my_argv_idx = 0;
  extern int opterr;
- int nextchar;
  opterr = 1;
  int optname;
 
@@ -81,14 +82,16 @@ int main(int argc, char **argv)
    {0, 0, 0, 0}
   };
 
-  printf("\nIndex: %d\n", optind);
+  printf("\noptind: %d\n", optind);
 
   /* getopt_long stores the option index here. */
   int option_index = 0;
 
   /* set opstring[0] = '-'                     */
+  printf("argv[0]: %s\n", argv[0]);
   c = getopt_long (argc, argv, "-hitu:w:",
                    long_options, &option_index);
+  printf("option_index: %d\n", option_index);
 
   /* Detect the end of the options. */
   if (c == -1)
@@ -108,7 +111,27 @@ int main(int argc, char **argv)
      break;
 
     case 1:
-     printf("Plain command-line argument: %s\n", optarg);
+     /* verify first argument */
+     if (optind == 2) {
+      if ( strncmp(argv[1], "ps", 2) == 0 ) {
+       if (execl("/usr/bin/docker", "docker", "ps", "-a", NULL) < 0) {
+        perror("Execl:");
+       }
+      } else if ( strncmp(argv[1], "images", 6) == 0 ) {
+       if (execl("/usr/bin/docker", "docker", "images", NULL) < 0) {
+        perror("Execl:");
+       }
+      } else if ( strncmp(argv[1], "run", 3) == 0 ) {
+       /*
+       #if (execl("/usr/bin/docker", "docker", "run", "-it", "--rm", "busybox", "sh", NULL) < 0) {
+       # perror("Execl:");
+       */
+       printf("Docker command: %s\n", argv[1]);
+      } else {
+        help(argv[0]);
+        exit(1);
+      }
+     }
      break;
 
     case 'h':
@@ -170,12 +193,6 @@ int main(int argc, char **argv)
    }
 
  /*------------------------------------------------------*/
-
- /* Set uid, gid, euid and egid to root */
- setegid(0);
- seteuid(0);
- setgid(0);
- setuid(0);
 
  /* Check argv for proper arguments and run 
   * the corresponding script, if invoked.
