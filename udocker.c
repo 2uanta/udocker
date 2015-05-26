@@ -84,18 +84,14 @@ int main(int argc, char **argv) {
 			{0, 0, 0, 0}
 		};
 
-		printf("\noptind: %d\n", optind);
-
 		/* getopt_long stores the option index here. */
 		int option_index = 0;
 
 		/* set opstring[0] = '-'                     */
 		c = getopt_long (argc, argv, "-hitu:w:",
 				long_options, &option_index);
-		printf("option_index: %d\n", option_index);
 
 		/* Detect the end of the options. */
-		printf("c: %c\n", c);
 		if (c == -1)
 			break;
 
@@ -106,19 +102,16 @@ int main(int argc, char **argv) {
 					 if (long_options[option_index].flag != 0)
 					 break;
 					 */
-				printf ("Long option --%s", long_options[option_index].name);
 				len = strlen(long_options[option_index].name);
 				myargv[myidx] = malloc(len+2+1);
 				memcpy(myargv[myidx], "--", 2);
 				memcpy(myargv[myidx++]+2, long_options[option_index].name, len+1);
 
 				if (optarg) {
-					printf (" with arg %s", optarg);
 					len = strlen(optarg);
 					myargv[myidx] = malloc(len+1);
 					memcpy(myargv[myidx++], optarg, len+1);
 				}
-				printf ("\n");
 				break;
 
 			case 1:
@@ -136,9 +129,11 @@ int main(int argc, char **argv) {
 						exit(0);
 					} else if ( strncmp(argv[1], "run", 3) == 0 ) {
 
+						/*
 						len = strlen("echo");
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], "echo", len+1);
+						*/
 
 						len = strlen("docker");
 						myargv[myidx] = malloc(len+1);
@@ -159,7 +154,6 @@ int main(int argc, char **argv) {
 				} else if (optind <= argc) {
 						/* The following code is used when "-" is 
 						 * specified in the getop_long options       */
-					  printf("Here!!! optind: %d\n", optind);
 						len = strlen(argv[optind-1]);
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], argv[optind-1], len+1);
@@ -167,50 +161,46 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'h':
-				puts ("option -h\n");
-				printf("argv[0]: %s\n", argv[0]);
 				help(argv[0]);
 				break;
 
 			case 'i':
-				puts ("option -i\n");
 				len = strlen("-i");
 				myargv[myidx] = malloc(len+1);
 				memcpy(myargv[myidx++], "-i", len+1);
 				break;
 
 			case 't':
-				printf ("option -t\n");
 				len = strlen("-t");
 				myargv[myidx] = malloc(len+1);
 				memcpy(myargv[myidx++], "-t", len+1);
 				break;
 
 			case 'v':
-				printf ("option -v with value `%s'\n", optarg);
 				len = strlen("-v");
 				myargv[myidx] = malloc(len+1);
 				memcpy(myargv[myidx++], "-v", len+1);
+
 				len = strlen(optarg);
 				myargv[myidx] = malloc(len+1);
 				memcpy(myargv[myidx++], optarg, len+1);
 				break;
 
 			case 'u':
-				printf ("option -u  with value `%s'\n", optarg);
 				len = strlen("-u");
 				myargv[myidx] = malloc(len+1);
 				memcpy(myargv[myidx++], "-u", len+1);
+
 				len = strlen(optarg);
 				myargv[myidx] = malloc(len+1);
 				memcpy(myargv[myidx++], optarg, len+1);
 				break;
 
 			case 'w':
-				printf ("option -v with value `%s'\n", optarg);
 				len = strlen("-w");
 				myargv[myidx] = malloc(len+1);
 				memcpy(myargv[myidx++], "-w", len+1);
+
 				len = strlen(optarg);
 				myargv[myidx] = malloc(len+1);
 				memcpy(myargv[myidx++], optarg, len+1);
@@ -232,60 +222,37 @@ int main(int argc, char **argv) {
 	/* Instead of reporting ‘--verbose’
 	 *      and ‘--brief’ as they are encountered,
 	 *           we report the final status resulting from them. */
+	/*
 	if (verbose_flag)
 		puts ("verbose flag is set");
+	*/
 
 	/* Print any remaining command line arguments (not options). */
   /* The following code is used only when getop_long was called
 	 * without the '-' option                                    */
 	if (optind < argc) {
-					  printf("There!!!\n");
-		printf ("non-option ARGV-elements: ");
 		while (optind < argc) {
 			len = strlen(argv[optind]);
 			myargv[myidx] = malloc(len+1);
 			memcpy(myargv[myidx++], argv[optind], len+1);
-
-			printf ("%s ", argv[optind++]);
 		}
-		putchar ('\n');
 	}
 	/* */
 
 	myargv[myidx] = 0;
+	/*
 	if (execv("/bin/echo", myargv) < 0) {
 		perror("Echo:");
 	}
+	*/
 
-	/*------------------------------------------------------*/
-
-		/* Check argv for proper arguments and run 
-		 * the corresponding script, if invoked.
-		 */
-
-		/*
-			 if ( strncmp(argv[1], "ps", 5) == 0 ) {
-			 if (execl("/usr/bin/docker", "docker", "ps", "-a", NULL) < 0) {
-			 perror("Execl:");
-			 }
-			 } else if ( strncmp(argv[1], "images", 4) == 0 ) {
-			 if (execl("/usr/bin/docker", "docker", "images", NULL) < 0) {
-			 perror("Execl:");
-			 }
-			 } else if ( strncmp(argv[1], "run", 4) == 0 ) {
-			 if (execl("/usr/bin/docker", "docker", "run", "-it", "--rm", "busybox", "sh", NULL) < 0) {
-			 perror("Execl:");
-			 }
-			 } else {
-			 printf("Usage: udocker [ps|images|run] options\n");
-			 exit(1);
-			 }
-			 exit(0);
-			 */
+	if (execv("/usr/bin/docker", myargv) < 0) {
+		perror("docker: ");
 	}
+}
 
-	void help(char *name) {
-		printf(
+void help(char *name) {
+	printf(
 				"\n"
 				" Usage: %s [ps|images|run] options image command\n"
 				"\n"
@@ -306,4 +273,4 @@ int main(int argc, char **argv) {
 				" command:            command to be started upon container launch\n"
 				"\n"
 				, name);
-	}
+}
