@@ -90,11 +90,12 @@ int main(int argc, char **argv) {
 		int option_index = 0;
 
 		/* set opstring[0] = '-'                     */
-		c = getopt_long (argc, argv, "hitu:w:",
+		c = getopt_long (argc, argv, "-hitu:w:",
 				long_options, &option_index);
 		printf("option_index: %d\n", option_index);
 
 		/* Detect the end of the options. */
+		printf("c: %c\n", c);
 		if (c == -1)
 			break;
 
@@ -123,17 +124,17 @@ int main(int argc, char **argv) {
 			case 1:
 				/* verify first argument */
 				if (optind == 2) {
-					if ( strncmp(argv[1], "ps", 3) == 0 ) {
+					if ( strncmp(argv[1], "ps", 2) == 0 ) {
 						if (execl("/usr/bin/docker", "docker", "ps", "-a", NULL) < 0) {
 							perror("Execl:");
 						}
 						exit(0);
-					} else if ( strncmp(argv[1], "images", 7) == 0 ) {
+					} else if ( strncmp(argv[1], "images", 6) == 0 ) {
 						if (execl("/usr/bin/docker", "docker", "images", NULL) < 0) {
 							perror("Execl:");
 						}
 						exit(0);
-					} else if ( strncmp(argv[1], "run", 4) == 0 ) {
+					} else if ( strncmp(argv[1], "run", 3) == 0 ) {
 
 						len = strlen("echo");
 						myargv[myidx] = malloc(len+1);
@@ -147,24 +148,21 @@ int main(int argc, char **argv) {
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], argv[1], len+1);
 
-						/*
-#if (execl("/usr/bin/docker", "docker", "run", "-it", "--rm", "busybox", "sh", NULL) < 0) {
-# perror("Execl:");
-*/
+						if (argc < 3) {
+							help(argv[0]);
+							exit(1);
+						}
 					} else {
 						help(argv[0]);
 						exit(1);
 					}
-				} else if (optind < 2) {{	
-						help(argv[0]);
-						exit(1);
-					}
-				} else if (optind < argc) {
+				} else if (optind <= argc) {
 						/* The following code is used when "-" is 
 						 * specified in the getop_long options       */
-						len = strlen(argv[optind]);
+					  printf("Here!!! optind: %d\n", optind);
+						len = strlen(argv[optind-1]);
 						myargv[myidx] = malloc(len+1);
-						memcpy(myargv[myidx++], argv[optind], len+1);
+						memcpy(myargv[myidx++], argv[optind-1], len+1);
 				}	
 				break;
 
@@ -241,6 +239,7 @@ int main(int argc, char **argv) {
   /* The following code is used only when getop_long was called
 	 * without the '-' option                                    */
 	if (optind < argc) {
+					  printf("There!!!\n");
 		printf ("non-option ARGV-elements: ");
 		while (optind < argc) {
 			len = strlen(argv[optind]);
