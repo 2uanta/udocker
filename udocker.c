@@ -106,6 +106,8 @@ printf("optind: %d, myidx: %d\n", optind, myidx);
 					 if (long_options[option_index].flag != 0)
 					 break;
 					 */
+				if (strcmp(long_options[option_index].name, "verbose") == 0)
+					break;
 				len = strlen(long_options[option_index].name);
 				myargv[myidx] = malloc(len+2+1);
 				memcpy(myargv[myidx], "--", 2);
@@ -261,14 +263,6 @@ printf("optind: %d, myidx: %d\n", optind, myidx);
 		}
 	}
 
-	/* Instead of reporting ‘--verbose’
-	 *      and ‘--brief’ as they are encountered,
-	 *           we report the final status resulting from them. */
-	/*
-	if (verbose_flag)
-		puts ("verbose flag is set");
-	*/
-
 	/* Print any remaining command line arguments (not options). */
   /* The following code is used only when getop_long was called
 	 * without the '-' option                                    */
@@ -279,18 +273,19 @@ printf("optind: %d, myidx: %d\n", optind, myidx);
 			memcpy(myargv[myidx++], argv[optind], len+1);
 		}
 	}
-	/* */
-
+	/* Terminate myargv vector */
 	myargv[myidx] = 0;
-	if (execv("/bin/echo", myargv) < 0) {
-		perror("Echo:");
-	}
 
-	/* 
-	if (execv("/usr/bin/docker", myargv) < 0) {
-		perror("docker: ");
+	if (verbose_flag) {
+		puts ("verbose flag is set");
+	  if (execv("/bin/echo", myargv) < 0) {
+		  perror("Echo:");
+	  }
+	} else {
+	  if (execv("/usr/bin/docker", &myargv[1]) < 0) {
+		  perror("docker: ");
+	  }
 	}
-	*/
 	return 0;
 }
 
@@ -303,6 +298,7 @@ void help(char *name) {
 				" Options are mainly for the 'docker run` command.\n"
 				"\n"
 				"  -h|--help          print this help text\n"
+				"  --verbose          just echo the command string\n"
 				"  -it                run in interactive mode with a pseudo terminal\n"
 				"  --rm               Container to be removed at exit\n"
 				"  --name [container-name]\n"
