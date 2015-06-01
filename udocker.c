@@ -59,7 +59,8 @@ int main(int argc, char **argv) {
 	extern int opterr;
 	opterr = 1;
 	int optname;
-	char** myargv = malloc( (argc+1)*sizeof(void*));
+	/* add 20 to for the number of option parameters thhat we will add */
+	char** myargv = malloc( (argc+10)*sizeof(void*));
 printf("argc: %d\n", argc);
 	/* int myargc = argc+1;  */
 	int myidx = 0;
@@ -106,14 +107,12 @@ printf("optind: %d, myidx: %d\n", optind, myidx);
 					 break;
 					 */
 				len = strlen(long_options[option_index].name);
-printf("myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 				myargv[myidx] = malloc(len+2+1);
 				memcpy(myargv[myidx], "--", 2);
 				memcpy(myargv[myidx++]+2, long_options[option_index].name, len+1);
 
 				if (optarg) {
 					len = strlen(optarg);
-printf("myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 					myargv[myidx] = malloc(len+1);
 					memcpy(myargv[myidx++], optarg, len+1);
 				}
@@ -166,16 +165,8 @@ printf("myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 						
             sprintf(id, "%d%s%d", uid, ":", gid);
 						len = strlen(id);
-/* PROBLEM HERE myargv[0] will get ovrriden with garbage */
-printf("len:%d\n", len);
-printf("1/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
-printf("Before malloc()\n");
 						myargv[myidx] = malloc(len+1);
-printf("After malloc()\n");
-/* After myargv[0] got overriden                         */
-printf("2/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 						memcpy(myargv[myidx++], id, len+1);
-printf("3/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 
 						/* -v                                           */
 						len = strlen("-v");
@@ -183,12 +174,8 @@ printf("3/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 						memcpy(myargv[myidx++], "-v", len+1);
 
 						len = strlen(homedir);
-printf("len:%d\n", len);
-printf("4/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 						myargv[myidx] = malloc(len+1);
-printf("5/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 						memcpy(myargv[myidx++], homedir, len+1);
-printf("6/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 
 						if (argc < 3) {
 							help(argv[0]);
@@ -201,17 +188,9 @@ printf("6/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 				} else if (optind <= argc) {
 						/* The following code is used when "-" is 
 						 * specified in the getop_long options       */
-printf("argv[optind-1]: %s\n", argv[optind-1]);
 						len = strlen(argv[optind-1]);
-printf("7/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
-/* PROBLEM HERE myargv[0] will get ovrriden with garbage */
-printf("Before malloc()\n");
 						myargv[myidx] = malloc(len+1);
-printf("After malloc()\n");
-/* After myargv[0] got overriden                         */
-printf("8/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 						memcpy(myargv[myidx++], argv[optind-1], len+1);
-printf("9/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 				}	
 				break;
 
@@ -303,7 +282,6 @@ printf("9/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 	/* */
 
 	myargv[myidx] = 0;
-printf("10/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 	if (execv("/bin/echo", myargv) < 0) {
 		perror("Echo:");
 	}
