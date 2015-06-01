@@ -44,6 +44,7 @@ int main(int argc, char **argv) {
 	gid = getgid();
 	struct passwd *pw = getpwuid(uid);
 	const char *homedir = pw->pw_dir;
+  char id[100] = "";
 	printf("uid:gid %d:%d %s %d\n", getuid(), getgid(), homedir, argc);
 
 	/* Set uid, gid, euid and egid to root */
@@ -58,12 +59,14 @@ int main(int argc, char **argv) {
 	extern int opterr;
 	opterr = 1;
 	int optname;
-	char** myargv = malloc( (argc-1)*sizeof(void*));
-	int myargc = argc; 
+	char** myargv = malloc( (argc+1)*sizeof(void*));
+printf("argc: %d\n", argc);
+	/* int myargc = argc+1;  */
 	int myidx = 0;
 	int len = 0;
 
 	while (1) {
+printf("optind: %d, myidx: %d\n", optind, myidx);
 		struct option long_options[] =
 		{
 			/* These options set a flag. */
@@ -103,12 +106,14 @@ int main(int argc, char **argv) {
 					 break;
 					 */
 				len = strlen(long_options[option_index].name);
+printf("myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 				myargv[myidx] = malloc(len+2+1);
 				memcpy(myargv[myidx], "--", 2);
 				memcpy(myargv[myidx++]+2, long_options[option_index].name, len+1);
 
 				if (optarg) {
 					len = strlen(optarg);
+printf("myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 					myargv[myidx] = malloc(len+1);
 					memcpy(myargv[myidx++], optarg, len+1);
 				}
@@ -128,20 +133,62 @@ int main(int argc, char **argv) {
 						}
 						exit(0);
 					} else if ( strncmp(argv[1], "run", 3) == 0 ) {
-
-						/*
+						/* */ 
+						printf("echo myidx: %d\n", myidx);
 						len = strlen("echo");
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], "echo", len+1);
-						*/
+						/* */
 
+						printf("docker myidx: %d\n", myidx);
 						len = strlen("docker");
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], "docker", len+1);
 
+						printf("run myidx: %d\n", myidx);
 						len = strlen(argv[1]);
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], argv[1], len+1);
+
+						/* This is the place to override docker command */
+						/* -it                                          */
+						len = strlen("-it");
+						myargv[myidx] = malloc(len+1);
+						memcpy(myargv[myidx++], "-it", len+1);
+						/* --rm                                         */
+						len = strlen("--rm");
+						myargv[myidx] = malloc(len+1);
+						memcpy(myargv[myidx++], "--rm", len+1);
+						/* -u                                           */
+						len = strlen("-u");
+						myargv[myidx] = malloc(len+1);
+						memcpy(myargv[myidx++], "-u", len+1);
+						
+            sprintf(id, "%d%s%d", uid, ":", gid);
+						len = strlen(id);
+/* PROBLEM HERE myargv[0] will get ovrriden with garbage */
+printf("len:%d\n", len);
+printf("1/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
+printf("Before malloc()\n");
+						myargv[myidx] = malloc(len+1);
+printf("After malloc()\n");
+/* After myargv[0] got overriden                         */
+printf("2/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
+						memcpy(myargv[myidx++], id, len+1);
+printf("3/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
+
+						/* -v                                           */
+						len = strlen("-v");
+						myargv[myidx] = malloc(len+1);
+						memcpy(myargv[myidx++], "-v", len+1);
+
+						len = strlen(homedir);
+printf("len:%d\n", len);
+printf("4/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
+						myargv[myidx] = malloc(len+1);
+printf("5/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
+						memcpy(myargv[myidx++], homedir, len+1);
+printf("6/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 
 						if (argc < 3) {
 							help(argv[0]);
@@ -154,9 +201,17 @@ int main(int argc, char **argv) {
 				} else if (optind <= argc) {
 						/* The following code is used when "-" is 
 						 * specified in the getop_long options       */
+printf("argv[optind-1]: %s\n", argv[optind-1]);
 						len = strlen(argv[optind-1]);
+printf("7/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
+/* PROBLEM HERE myargv[0] will get ovrriden with garbage */
+printf("Before malloc()\n");
 						myargv[myidx] = malloc(len+1);
+printf("After malloc()\n");
+/* After myargv[0] got overriden                         */
+printf("8/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 						memcpy(myargv[myidx++], argv[optind-1], len+1);
+printf("9/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 				}	
 				break;
 
@@ -165,18 +220,23 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'i':
+				/* ignore
 				len = strlen("-i");
 				myargv[myidx] = malloc(len+1);
 				memcpy(myargv[myidx++], "-i", len+1);
+				*/
 				break;
 
 			case 't':
+				/* ignore
 				len = strlen("-t");
 				myargv[myidx] = malloc(len+1);
 				memcpy(myargv[myidx++], "-t", len+1);
+				*/
 				break;
 
 			case 'v':
+				/* ignore
 				len = strlen("-v");
 				myargv[myidx] = malloc(len+1);
 				memcpy(myargv[myidx++], "-v", len+1);
@@ -184,9 +244,11 @@ int main(int argc, char **argv) {
 				len = strlen(optarg);
 				myargv[myidx] = malloc(len+1);
 				memcpy(myargv[myidx++], optarg, len+1);
+				*/
 				break;
 
 			case 'u':
+				/* ignore
 				len = strlen("-u");
 				myargv[myidx] = malloc(len+1);
 				memcpy(myargv[myidx++], "-u", len+1);
@@ -194,6 +256,7 @@ int main(int argc, char **argv) {
 				len = strlen(optarg);
 				myargv[myidx] = malloc(len+1);
 				memcpy(myargv[myidx++], optarg, len+1);
+				*/
 				break;
 
 			case 'w':
@@ -240,15 +303,17 @@ int main(int argc, char **argv) {
 	/* */
 
 	myargv[myidx] = 0;
-	/*
+printf("10/myargv[0] and [1]: (%s, %s)\n", myargv[0], myargv[1]);
 	if (execv("/bin/echo", myargv) < 0) {
 		perror("Echo:");
 	}
-	*/
 
+	/* 
 	if (execv("/usr/bin/docker", myargv) < 0) {
 		perror("docker: ");
 	}
+	*/
+	return 0;
 }
 
 void help(char *name) {
