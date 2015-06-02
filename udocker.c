@@ -44,8 +44,9 @@ int main(int argc, char **argv) {
 	gid = getgid();
 	struct passwd *pw = getpwuid(uid);
 	const char *homedir = pw->pw_dir;
-  char id[100] = "";
-	printf("uid:gid %d:%d %s %d\n", getuid(), getgid(), homedir, argc);
+  char id[100] = ""; 
+	char *homeopt;
+	/* printf("uid:gid %d:%d %s %d\n", getuid(), getgid(), homedir, argc); */
 
 	/* Set uid, gid, euid and egid to root */
 	setegid(0);
@@ -61,13 +62,11 @@ int main(int argc, char **argv) {
 	int optname;
 	/* add 20 to for the number of option parameters thhat we will add */
 	char** myargv = malloc( (argc+10)*sizeof(void*));
-printf("argc: %d\n", argc);
 	/* int myargc = argc+1;  */
 	int myidx = 0;
 	int len = 0;
 
 	while (1) {
-printf("optind: %d, myidx: %d\n", optind, myidx);
 		struct option long_options[] =
 		{
 			/* These options set a flag. */
@@ -92,7 +91,7 @@ printf("optind: %d, myidx: %d\n", optind, myidx);
 		int option_index = 0;
 
 		/* set opstring[0] = '-'                     */
-		c = getopt_long (argc, argv, "-hitu:w:",
+		c = getopt_long (argc, argv, "-hitc:u:w:",
 				long_options, &option_index);
 
 		/* Detect the end of the options. */
@@ -102,6 +101,7 @@ printf("optind: %d, myidx: %d\n", optind, myidx);
 		switch (c)
 		{
 			case 0:
+				/* getopt_long() set a flag as found in the long option table. */
 				/* If this option set a flag, do nothing else now.
 					 if (long_options[option_index].flag != 0)
 					 break;
@@ -121,6 +121,7 @@ printf("optind: %d, myidx: %d\n", optind, myidx);
 				break;
 
 			case 1:
+				/* optarg points at a plain command-line argument. */
 				/* verify first argument */
 				if (optind == 2) {
 					if ( strncmp(argv[1], "ps", 2) == 0 ) {
@@ -135,18 +136,15 @@ printf("optind: %d, myidx: %d\n", optind, myidx);
 						exit(0);
 					} else if ( strncmp(argv[1], "run", 3) == 0 ) {
 						/* */ 
-						printf("echo myidx: %d\n", myidx);
 						len = strlen("echo");
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], "echo", len+1);
 						/* */
 
-						printf("docker myidx: %d\n", myidx);
 						len = strlen("docker");
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], "docker", len+1);
 
-						printf("run myidx: %d\n", myidx);
 						len = strlen(argv[1]);
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], argv[1], len+1);
@@ -165,7 +163,7 @@ printf("optind: %d, myidx: %d\n", optind, myidx);
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], "-u", len+1);
 						
-            sprintf(id, "%d%s%d", uid, ":", gid);
+            sprintf(id, "%d:%d", uid, gid);
 						len = strlen(id);
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], id, len+1);
@@ -175,9 +173,11 @@ printf("optind: %d, myidx: %d\n", optind, myidx);
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], "-v", len+1);
 
-						len = strlen(homedir);
+						len = strlen(homedir) + 1 + strlen(homedir);
+						homeopt = malloc(len+1);
+						sprintf(homeopt, "%s:%s", homedir, homedir);
 						myargv[myidx] = malloc(len+1);
-						memcpy(myargv[myidx++], homedir, len+1);
+						memcpy(myargv[myidx++], homeopt, len+1);
 
 						if (argc < 3) {
 							help(argv[0]);
@@ -240,17 +240,19 @@ printf("optind: %d, myidx: %d\n", optind, myidx);
 				*/
 				break;
 
-			case 'w':
-				len = strlen("-w");
+			case 'c':
+				len = strlen("-c");
 				myargv[myidx] = malloc(len+1);
-				memcpy(myargv[myidx++], "-w", len+1);
+				memcpy(myargv[myidx++], "-c", len+1);
 
 				len = strlen(optarg);
 				myargv[myidx] = malloc(len+1);
-				memcpy(myargv[myidx++], optarg, len+1);
+				/* memcpy(myargv[myidx++], optarg, len+1); */
+				sprintf(myargv[myidx++], "%s", optarg);
 				break;
 
 			case '?':
+				/* Invalid option. */
 				/* getopt_long already printed an error message. */
 				printf ("Invalid long option %c\n", optopt);
 				if (optopt)
