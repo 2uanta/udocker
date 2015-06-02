@@ -61,7 +61,8 @@ int main(int argc, char **argv) {
 	opterr = 1;
 	int optname;
 	/* add 20 to for the number of option parameters thhat we will add */
-	char** myargv = malloc( (argc+10)*sizeof(void*));
+  #define MAXMYIDX 20
+	char** myargv = malloc( (argc+MAXMYIDX)*sizeof(void*));
 	/* int myargc = argc+1;  */
 	int myidx = 0;
 	int len = 0;
@@ -90,7 +91,7 @@ int main(int argc, char **argv) {
 		/* getopt_long stores the option index here. */
 		int option_index = 0;
 
-		/* set opstring[0] = '-'                     */
+		/* set opstring[0] = '-' to process every arguments */
 		c = getopt_long (argc, argv, "-hitc:u:w:",
 				long_options, &option_index);
 
@@ -102,18 +103,26 @@ int main(int argc, char **argv) {
 		{
 			case 0:
 				/* getopt_long() set a flag as found in the long option table. */
-				/* If this option set a flag, do nothing else now.
-					 if (long_options[option_index].flag != 0)
-					 break;
-					 */
+				/* don't do anything if --verbose                              */
 				if (strcmp(long_options[option_index].name, "verbose") == 0)
 					break;
+				
+				/* copy the option name preprended by --                       */
 				len = strlen(long_options[option_index].name);
+				if (myidx == MAXMYIDX) {
+				  fprintf(stderr, "MAXMYIDX not large enough...\n");
+				  exit(EXIT_FAILURE);
+				}
 				myargv[myidx] = malloc(len+2+1);
 				memcpy(myargv[myidx], "--", 2);
 				memcpy(myargv[myidx++]+2, long_options[option_index].name, len+1);
 
+				/* copy the option if specified                                */
 				if (optarg) {
+				  if (myidx == MAXMYIDX) {
+				    fprintf(stderr, "MAXMYIDX not large enough...\n");
+				    exit(EXIT_FAILURE);
+				  }
 					len = strlen(optarg);
 					myargv[myidx] = malloc(len+1);
 					memcpy(myargv[myidx++], optarg, len+1);
@@ -122,7 +131,7 @@ int main(int argc, char **argv) {
 
 			case 1:
 				/* optarg points at a plain command-line argument. */
-				/* verify first argument */
+				/* verify first argument is ps|images|run          */
 				if (optind == 2) {
 					if ( strncmp(argv[1], "ps", 2) == 0 ) {
 						if (execl("/usr/bin/docker", "docker", "ps", "-a", NULL) < 0) {
@@ -135,50 +144,90 @@ int main(int argc, char **argv) {
 						}
 						exit(0);
 					} else if ( strncmp(argv[1], "run", 3) == 0 ) {
-						/* */ 
+						/* echo */ 
+				    if (myidx == MAXMYIDX) {
+				      fprintf(stderr, "MAXMYIDX not large enough...\n");
+				      exit(EXIT_FAILURE);
+				    }
 						len = strlen("echo");
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], "echo", len+1);
-						/* */
 
+						/* docker */
+				    if (myidx == MAXMYIDX) {
+				      fprintf(stderr, "MAXMYIDX not large enough...\n");
+				      exit(EXIT_FAILURE);
+				    }
 						len = strlen("docker");
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], "docker", len+1);
 
+						/* run */
+				    if (myidx == MAXMYIDX) {
+				      fprintf(stderr, "MAXMYIDX not large enough...\n");
+				      exit(EXIT_FAILURE);
+				    }
 						len = strlen(argv[1]);
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], argv[1], len+1);
 
 						/* This is the place to override docker command */
 						/* -it                                          */
+				    if (myidx == MAXMYIDX) {
+				      fprintf(stderr, "MAXMYIDX not large enough...\n");
+				      exit(EXIT_FAILURE);
+				    }
 						len = strlen("-it");
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], "-it", len+1);
+
 						/* --rm                                         */
+				    if (myidx == MAXMYIDX) {
+				      fprintf(stderr, "MAXMYIDX not large enough...\n");
+				      exit(EXIT_FAILURE);
+				    }
 						len = strlen("--rm");
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], "--rm", len+1);
+
 						/* -u                                           */
+				    if (myidx == MAXMYIDX) {
+				      fprintf(stderr, "MAXMYIDX not large enough...\n");
+				      exit(EXIT_FAILURE);
+				    }
 						len = strlen("-u");
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], "-u", len+1);
 						
+				    if (myidx == MAXMYIDX) {
+				      fprintf(stderr, "MAXMYIDX not large enough...\n");
+				      exit(EXIT_FAILURE);
+				    }
             sprintf(id, "%d:%d", uid, gid);
 						len = strlen(id);
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], id, len+1);
 
 						/* -v                                           */
+				    if (myidx == MAXMYIDX) {
+				      fprintf(stderr, "MAXMYIDX not large enough...\n");
+				      exit(EXIT_FAILURE);
+				    }
 						len = strlen("-v");
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], "-v", len+1);
 
+				    if (myidx == MAXMYIDX) {
+				      fprintf(stderr, "MAXMYIDX not large enough...\n");
+				      exit(EXIT_FAILURE);
+				    }
 						len = strlen(homedir) + 1 + strlen(homedir);
 						homeopt = malloc(len+1);
 						sprintf(homeopt, "%s:%s", homedir, homedir);
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], homeopt, len+1);
 
+						/* print help if less than 3 arguments given */
 						if (argc < 3) {
 							help(argv[0]);
 							exit(1);
@@ -190,6 +239,10 @@ int main(int argc, char **argv) {
 				} else if (optind <= argc) {
 						/* The following code is used when "-" is 
 						 * specified in the getop_long options       */
+				    if (myidx == MAXMYIDX) {
+				      fprintf(stderr, "MAXMYIDX not large enough...\n");
+				      exit(EXIT_FAILURE);
+				    }
 						len = strlen(argv[optind-1]);
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], argv[optind-1], len+1);
@@ -241,10 +294,37 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'c':
+				if (myidx == MAXMYIDX) {
+				  fprintf(stderr, "MAXMYIDX not large enough...\n");
+				  exit(EXIT_FAILURE);
+				}
 				len = strlen("-c");
 				myargv[myidx] = malloc(len+1);
 				memcpy(myargv[myidx++], "-c", len+1);
 
+				if (myidx == MAXMYIDX) {
+				  fprintf(stderr, "MAXMYIDX not large enough...\n");
+				  exit(EXIT_FAILURE);
+				}
+				len = strlen(optarg);
+				myargv[myidx] = malloc(len+1);
+				/* memcpy(myargv[myidx++], optarg, len+1); */
+				sprintf(myargv[myidx++], "%s", optarg);
+				break;
+
+			case 'w':
+				if (myidx == MAXMYIDX) {
+				  fprintf(stderr, "MAXMYIDX not large enough...\n");
+				  exit(EXIT_FAILURE);
+				}
+				len = strlen("-w");
+				myargv[myidx] = malloc(len+1);
+				memcpy(myargv[myidx++], "-w", len+1);
+
+				if (myidx == MAXMYIDX) {
+				  fprintf(stderr, "MAXMYIDX not large enough...\n");
+				  exit(EXIT_FAILURE);
+				}
 				len = strlen(optarg);
 				myargv[myidx] = malloc(len+1);
 				/* memcpy(myargv[myidx++], optarg, len+1); */
@@ -261,7 +341,9 @@ int main(int argc, char **argv) {
 
 			default:
 				/* break; */
-				abort ();
+				fprintf(stderr, "Unprocessed option...\n");
+				exit(EXIT_FAILURE);
+				/* abort (); */
 		}
 	}
 
@@ -270,6 +352,10 @@ int main(int argc, char **argv) {
 	 * without the '-' option                                    */
 	if (optind < argc) {
 		while (optind < argc) {
+		  if (myidx == MAXMYIDX) {
+				fprintf(stderr, "MAXMYIDX not large enough...\n");
+				exit(EXIT_FAILURE);
+		  }
 			len = strlen(argv[optind]);
 			myargv[myidx] = malloc(len+1);
 			memcpy(myargv[myidx++], argv[optind], len+1);
