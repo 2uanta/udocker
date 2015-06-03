@@ -46,6 +46,9 @@ int main(int argc, char **argv) {
 	const char *homedir = pw->pw_dir;
   char id[100] = ""; 
 	char *homeopt;
+	char *wopt;
+	char sudoers[] = "/dev/null:/etc/sudoers";
+
 	/* printf("uid:gid %d:%d %s %d\n", getuid(), getgid(), homedir, argc); */
 
 	/* Set uid, gid, euid and egid to root */
@@ -61,7 +64,7 @@ int main(int argc, char **argv) {
 	opterr = 1;
 	int optname;
 	/* add 20 to for the number of option parameters thhat we will add */
-  #define MAXMYIDX 20
+  #define MAXMYIDX 30
 	char** myargv = malloc( (argc+MAXMYIDX)*sizeof(void*));
 	/* int myargc = argc+1;  */
 	int myidx = 0;
@@ -208,7 +211,7 @@ int main(int argc, char **argv) {
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], id, len+1);
 
-						/* -v                                           */
+						/* -v homedir:homedir                           */
 				    if (myidx == MAXMYIDX) {
 				      fprintf(stderr, "MAXMYIDX not large enough...\n");
 				      exit(EXIT_FAILURE);
@@ -226,6 +229,40 @@ int main(int argc, char **argv) {
 						sprintf(homeopt, "%s:%s", homedir, homedir);
 						myargv[myidx] = malloc(len+1);
 						memcpy(myargv[myidx++], homeopt, len+1);
+
+						/* -v /dev/null:/etc/sudoers                   */
+				    if (myidx == MAXMYIDX) {
+				      fprintf(stderr, "MAXMYIDX not large enough...\n");
+				      exit(EXIT_FAILURE);
+				    }
+						len = strlen("-v");
+						myargv[myidx] = malloc(len+1);
+						memcpy(myargv[myidx++], "-v", len+1);
+
+				    if (myidx == MAXMYIDX) {
+				      fprintf(stderr, "MAXMYIDX not large enough...\n");
+				      exit(EXIT_FAILURE);
+				    }
+						myargv[myidx++] = sudoers;
+
+						/* -w homedir                                   */
+				    if (myidx == MAXMYIDX) {
+				      fprintf(stderr, "MAXMYIDX not large enough...\n");
+				      exit(EXIT_FAILURE);
+				    }
+						len = strlen("-w");
+						myargv[myidx] = malloc(len+1);
+						memcpy(myargv[myidx++], "-w", len+1);
+
+				    if (myidx == MAXMYIDX) {
+				      fprintf(stderr, "MAXMYIDX not large enough...\n");
+				      exit(EXIT_FAILURE);
+				    }
+						len = strlen(homedir) + 1;
+						wopt = malloc(len+1);
+						sprintf(wopt, "%s", homedir);
+						myargv[myidx] = malloc(len+1);
+						memcpy(myargv[myidx++], wopt, len+1);
 
 						/* print help if less than 3 arguments given */
 						if (argc < 3) {
