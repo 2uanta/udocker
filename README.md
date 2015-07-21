@@ -3,8 +3,10 @@
 Wrapper to enforce some docker command-line options in order to allow the user to run docker as non-root.
 
 * force uid so that the container will run under this user privilege
+* map /etc/sudoers to /dev/null to disable sudo su
 * automatically map user home directory and present it as a volume to the container
-* allow interactive container as well
+* force work dir to be user's home dir
+* force interactive container 
 * force --rm option to remove the container on exit
 * many other options are disabled
 
@@ -25,7 +27,7 @@ Usage: /usr/local/bin/udocker [ps|images|run] options image command
                      Map host directories
   -u|--user [Username|UID]
   -w [dir]           Working directory inside the container
-```  
 
  image:              docker image to be loaded
  command:            command to be started upon container launch
+```  

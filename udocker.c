@@ -240,10 +240,8 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'w':
-				/* ignore
 				cpyarg(myargv, "-w");
 				cpyarg(myargv, optarg);
-				*/
 				break;
 
 			case '?':
