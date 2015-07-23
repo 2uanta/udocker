@@ -151,6 +151,10 @@ int main(int argc, char **argv) {
 						/* run */
 				    cpyarg(myargv, argv[1]);
 
+						/* -it --rm */
+				    cpyarg(myargv, "-it");
+				    cpyarg(myargv, "--rm");
+
 						/* This is the place to override docker command */
 						/* -u                                           */
 				    cpyarg(myargv, "-u");
@@ -199,19 +203,27 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'i':
+				/* ingore
 				cpyarg(myargv, "-i");
+				*/
 		    /* force -rm if -i                              */
+				/*
 				cpyarg(myargv, "--rm");
+				*/
 
 				break;
 
 			case 't':
+				/*
 				cpyarg(myargv, "-t");
+				*/
 
 				break;
 
 			case 'd':
+				/* ignore
 				cpyarg(myargv, "-d");
+				*/
 
 				break;
 
