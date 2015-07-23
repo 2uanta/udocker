@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
 				    cpyarg(myargv, argv[1]);
 
 						/* -it --rm */
-				    cpyarg(myargv, "-it");
+				    cpyarg(myargv, "-i");
 				    cpyarg(myargv, "--rm");
 
 						/* This is the place to override docker command */
