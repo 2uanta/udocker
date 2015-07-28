@@ -214,9 +214,7 @@ int main(int argc, char **argv) {
 				break;
 
 			case 't':
-				/*
 				cpyarg(myargv, "-t");
-				*/
 
 				break;
 
