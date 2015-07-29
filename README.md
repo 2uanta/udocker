@@ -25,7 +25,7 @@ Usage: /usr/local/bin/udocker [ps|images|run] options image command
   --rm               Container to be removed at exit
   --name [container-name]
                      Name to be given to the container
-  -v|--volumes-from [host-dir]:[container-dir]:[rw|ro]
+  -v|--volumes      [host-dir]:[container-dir]:[rw|ro]
                      Map host directories
   -u|--user [Username|UID]
   -w [dir]           Working directory inside the container
