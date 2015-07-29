@@ -200,6 +200,7 @@ int main(int argc, char **argv) {
 
 			case 'h':
 				help(argv[0]);
+		    exit(1);
 				break;
 
 			case 'i':
