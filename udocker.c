@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
 			/*
 				 {"volumes-from",	required_argument,	&optname, 	  1},
 				 */
-			{"volumes-from",	required_argument,	0, 		'v'},
+			{"volumes",     required_argument,	0, 		'v'},
 			{"user",    		required_argument,	0, 		'u'},
 			{0, 0, 0, 0}
 		};
@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
 		int option_index = 0;
 
 		/* set opstring[0] = '-' to process every arguments */
-		c = getopt_long (argc, argv, "-hitdc:p:u:w:",
+		c = getopt_long (argc, argv, "-hitdc:p:u:v:w:",
 				long_options, &option_index);
 
 		/* Detect the end of the options. */
@@ -227,10 +227,8 @@ int main(int argc, char **argv) {
 				break;
 
 			case 'v':
-				/* ignore
 				cpyarg(myargv, "-v");
 				cpyarg(myargv, optarg);
-				*/
 				break;
 
 			case 'u':
@@ -311,7 +309,7 @@ void help(char *name) {
 				"  --name [container-name]\n"
 				"                     Name to be given to the container\n"
 				"  -v|--volumes-from [host-dir]:[container-dir]:[rw|ro]\n"
-				"   *not supported at the moment*  Map host directories\n"
+				"                     Map host directories\n"
 				"  -u|--user [Username|UID]\n"
 				"  -p nnnn            port number to expose\n"
 				"  -w [dir]           Working directory inside the container\n"
