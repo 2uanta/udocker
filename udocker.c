@@ -310,7 +310,7 @@ void help(char *name) {
 				"  --name [container-name]\n"
 				"                     Name to be given to the container\n"
 				"  -v|--volumes-from [host-dir]:[container-dir]:[rw|ro]\n"
-				"                     Map host directories\n"
+				"   *not supported at the moment*  Map host directories\n"
 				"  -u|--user [Username|UID]\n"
 				"  -p nnnn            port number to expose\n"
 				"  -w [dir]           Working directory inside the container\n"
