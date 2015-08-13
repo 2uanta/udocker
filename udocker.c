@@ -274,7 +274,7 @@ int main(int argc, char **argv) {
 	 * without the '-' option                                    */
 	if (optind < argc) {
 		while (optind < argc) {
-			cpyarg(myargv, argv[optind]);
+			cpyarg(myargv, argv[optind++]);
 		}
 	}
 	/* Terminate myargv vector */
