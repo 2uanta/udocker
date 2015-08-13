@@ -151,8 +151,8 @@ int main(int argc, char **argv) {
 						/* run */
 				    cpyarg(myargv, argv[1]);
 
-						/* -it --rm */
-				    cpyarg(myargv, "-i");
+						/* -it --rm will be forced */
+				    cpyarg(myargv, "-it");
 				    cpyarg(myargv, "--rm");
 
 						/* This is the place to override docker command */
@@ -207,15 +207,13 @@ int main(int argc, char **argv) {
 				/* ingore
 				cpyarg(myargv, "-i");
 				*/
-		    /* force -rm if -i                              */
-				/*
-				cpyarg(myargv, "--rm");
-				*/
 
 				break;
 
 			case 't':
+				/* ingore
 				cpyarg(myargv, "-t");
+				*/
 
 				break;
 
@@ -272,9 +270,10 @@ int main(int argc, char **argv) {
 	/* Print any remaining command line arguments (not options). */
   /* The following code is used only when getop_long was called
 	 * without the '-' option                                    */
+	/* User can terminate option string by entering --          */
 	if (optind < argc) {
 		while (optind < argc) {
-			cpyarg(myargv, argv[optind]);
+			cpyarg(myargv, argv[optind++]);
 		}
 	}
 	/* Terminate myargv vector */
