@@ -13,21 +13,22 @@ Wrapper to enforce some docker command-line options in order to allow the user t
 
 The wrapper must run as suid and owned by root.
 ```
-Usage: /usr/local/bin/udocker [ps|images|run] options image command
+ Usage: ./udocker [ps|images|pull|run] options image command
 
  Minimumm wrapper for docker run command to run as non-root
  Options are mainly for the 'docker run` command.
 
   -h|--help          print this help text
   --verbose          just echo the command string
-  -i                 run in interactive mode
-  -t                 if console session is desired
+  -it|d              run in interactive mode with a pseudo terminal
+                     or in background detached mode
   --rm               Container to be removed at exit
   --name [container-name]
                      Name to be given to the container
-  -v|--volumes      [host-dir]:[container-dir]:[rw|ro]
+  -v|--volumes-from [host-dir]:[container-dir]:[rw|ro]
                      Map host directories
   -u|--user [Username|UID]
+  -p nnnn            port number to expose
   -w [dir]           Working directory inside the container
 
  image:              docker image to be loaded

@@ -51,6 +51,7 @@ int main(int argc, char **argv) {
   char id[100] = ""; 
 	char *homeopt;
 	char *wopt;
+	char *dockercmd;
 	char sudoers[] = "/dev/null:/etc/sudoers";
 
 	/* printf("uid:gid %d:%d %s %d\n", getuid(), getgid(), homedir, argc); */
@@ -131,6 +132,10 @@ int main(int argc, char **argv) {
 				/* optarg points at a plain command-line argument. */
 				/* verify first argument is ps|images|run          */
 				if (optind == 2) {
+			    len = strlen(argv[1]);
+				  dockercmd = malloc(len);
+					memcpy(dockercmd, argv[1], len);
+
 					if ( strncmp(argv[1], "ps", 2) == 0 ) {
 						if (execl("/usr/bin/docker", "docker", "ps", "-a", NULL) < 0) {
 							perror("Execl:");
@@ -141,46 +146,48 @@ int main(int argc, char **argv) {
 							perror("Execl:");
 						}
 						exit(0);
-					} else if ( strncmp(argv[1], "run", 3) == 0 ) {
+					} else if ( strncmp(argv[1], "run", 3) == 0 || strncmp(argv[1], "pull", 4) == 0 ) {
 						/* echo */ 
 				    cpyarg(myargv, "echo");
 
 						/* docker */
 				    cpyarg(myargv, "docker");
 
-						/* run */
+						/* run or pull */
 				    cpyarg(myargv, argv[1]);
 
-						/* -it --rm */
-				    cpyarg(myargv, "-i");
-				    cpyarg(myargv, "--rm");
+						if ( strcmp(dockercmd, "run") == 0) {
+						  /* -it --rm */
+				      cpyarg(myargv, "-i");
+				      cpyarg(myargv, "--rm");
 
-						/* This is the place to override docker command */
-						/* -u                                           */
-				    cpyarg(myargv, "-u");
+						  /* This is the place to override docker command */
+						  /* -u                                           */
+				      cpyarg(myargv, "-u");
 						
-            sprintf(id, "%d:%d", uid, gid);
-				    cpyarg(myargv, id);
+              sprintf(id, "%d:%d", uid, gid);
+				      cpyarg(myargv, id);
 
-						/* -v homedir:homedir                           */
-				    cpyarg(myargv, "-v");
+						  /* -v homedir:homedir                           */
+				      cpyarg(myargv, "-v");
 
-						len = strlen(homedir) + 1 + strlen(homedir);
-						homeopt = malloc(len+1);
-						sprintf(homeopt, "%s:%s", homedir, homedir);
-						cpyarg(myargv, homeopt);
+						  len = strlen(homedir) + 1 + strlen(homedir);
+						  homeopt = malloc(len+1);
+						  sprintf(homeopt, "%s:%s", homedir, homedir);
+						  cpyarg(myargv, homeopt);
 
-						/* -v /dev/null:/etc/sudoers                   */
-				    cpyarg(myargv, "-v");
-						cpyarg(myargv, sudoers);
+						  /* -v /dev/null:/etc/sudoers                   */
+				      cpyarg(myargv, "-v");
+						  cpyarg(myargv, sudoers);
 
-						/* -w homedir                                   */
-				    cpyarg(myargv, "-w");
+						  /* -w homedir                                   */
+				      cpyarg(myargv, "-w");
 
-						len = strlen(homedir) + 1;
-						wopt = malloc(len+1);
-						sprintf(wopt, "%s", homedir);
-						cpyarg(myargv, wopt);
+						  len = strlen(homedir) + 1;
+						  wopt = malloc(len+1);
+						  sprintf(wopt, "%s", homedir);
+						  cpyarg(myargv, wopt);
+						}
 
 						/* print help if less than 3 arguments given */
 						if (argc < 3) {
@@ -296,7 +303,7 @@ int main(int argc, char **argv) {
 void help(char *name) {
 	printf(
 				"\n"
-				" Usage: %s [ps|images|run] options image command\n"
+				" Usage: %s [ps|images|pull|run] options image command\n"
 				"\n"
 				" Minimumm wrapper for docker run command to run as non-root\n"
 				" Options are mainly for the 'docker run` command.\n"
