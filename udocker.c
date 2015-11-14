@@ -171,9 +171,10 @@ int main(int argc, char **argv) {
 						  /* -v homedir:homedir                           */
 				      cpyarg(myargv, "-v");
 
-						  len = strlen(homedir) + 1 + strlen(homedir);
+							/* hack to prepend "/sb/" to all home dirs      */
+						  len = strlen(homedir) + 1 + strlen(homedir) + 3;
 						  homeopt = malloc(len+1);
-						  sprintf(homeopt, "%s:%s", homedir, homedir);
+						  sprintf(homeopt, "/sb%s:%s", homedir, homedir);
 						  cpyarg(myargv, homeopt);
 
 						  /* -v /dev/null:/etc/sudoers                   */
