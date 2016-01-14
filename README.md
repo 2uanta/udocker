@@ -13,7 +13,7 @@ Wrapper to enforce some docker command-line options in order to allow the user t
 
 The wrapper must run as suid and owned by root.
 ```
- Usage: ./udocker [ps|images|pull|run] options image command
+ Usage: ./udocker [ps|images|pull|run|load|save] options image command
 
  Minimumm wrapper for docker run command to run as non-root
  Options are mainly for the 'docker run` command.
@@ -30,6 +30,8 @@ The wrapper must run as suid and owned by root.
   -u|--user [Username|UID]
   -p nnnn            port number to expose
   -w [dir]           Working directory inside the container
+  --input image_file for docker load option
+  --output image_file for docker save option
 
  image:              docker image to be loaded
  command:            command to be started upon container launch
