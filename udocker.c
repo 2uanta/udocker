@@ -87,9 +87,11 @@ int main(int argc, char **argv) {
 			{"memory-swap", 	required_argument,	&optname, 	  1},
 			/*
 				 {"volumes-from",	required_argument,	&optname, 	  1},
-				 */
+			*/
 			{"volumes",     required_argument,	0, 		'v'},
 			{"user",    		required_argument,	0, 		'u'},
+			{"input",    		required_argument,	0, 		'j'},
+			{"output",    	required_argument,	0, 		'o'},
 			{0, 0, 0, 0}
 		};
 
@@ -97,7 +99,7 @@ int main(int argc, char **argv) {
 		int option_index = 0;
 
 		/* set opstring[0] = '-' to process every arguments */
-		c = getopt_long (argc, argv, "-hitdc:p:u:v:w:",
+		c = getopt_long (argc, argv, "-hitdc:j:o:p:u:v:w:",
 				long_options, &option_index);
 
 		/* Detect the end of the options. */
@@ -146,14 +148,14 @@ int main(int argc, char **argv) {
 							perror("Execl:");
 						}
 						exit(0);
-					} else if ( strncmp(argv[1], "run", 3) == 0 || strncmp(argv[1], "pull", 4) == 0 ) {
+					} else if ( strncmp(argv[1], "run", 3) == 0 || strncmp(argv[1], "pull", 4) == 0 || strncmp(argv[1], "load", 4) == 0 || strncmp(argv[1], "save", 4) == 0) {
 						/* echo */ 
 				    cpyarg(myargv, "echo");
 
 						/* docker */
 				    cpyarg(myargv, "docker");
 
-						/* run or pull */
+						/* run or pull or load or save */
 				    cpyarg(myargv, argv[1]);
 
 						if ( strcmp(dockercmd, "run") == 0) {
@@ -192,10 +194,12 @@ int main(int argc, char **argv) {
 
 						/* print help if less than 3 arguments given */
 						if (argc < 3) {
+							printf("Eror: Less than 3 arguments given\n");
 							help(argv[0]);
 							exit(1);
 						}
 					} else {
+						printf("Eror: Invalid Docker command\n");
 						help(argv[0]);
 						exit(1);
 					}
@@ -251,6 +255,16 @@ int main(int argc, char **argv) {
 				cpyarg(myargv, optarg);
 				break;
 
+			case 'j':
+				cpyarg(myargv, "--input");
+				cpyarg(myargv, optarg);
+				break;
+
+			case 'o':
+				cpyarg(myargv, "--output");
+				cpyarg(myargv, optarg);
+				break;
+
 			case 'p':
 				cpyarg(myargv, "-p");
 				cpyarg(myargv, optarg);
@@ -290,7 +304,7 @@ int main(int argc, char **argv) {
 
 	if (verbose_flag) {
 		puts ("verbose flag is set");
-	  if (execv("/bin/echo", myargv) < 0) {
+    if (execv("/bin/echo", myargv) < 0) {
 		  perror("Echo:");
 	  }
 	} else {
@@ -304,7 +318,7 @@ int main(int argc, char **argv) {
 void help(char *name) {
 	printf(
 				"\n"
-				" Usage: %s [ps|images|pull|run] options image command\n"
+				" Usage: %s [ps|images|pull|run|load|save] options image command\n"
 				"\n"
 				" Minimumm wrapper for docker run command to run as non-root\n"
 				" Options are mainly for the 'docker run` command.\n"
@@ -321,6 +335,8 @@ void help(char *name) {
 				"  -u|--user [Username|UID]\n"
 				"  -p nnnn            port number to expose\n"
 				"  -w [dir]           Working directory inside the container\n"
+				"  --input image_file for docker load option\n"
+				"  --output image_file for docker save option\n"
 				"\n"
 				" image:              docker image to be loaded\n"
 				" command:            command to be started upon container launch\n"
