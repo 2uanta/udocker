@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
 		int option_index = 0;
 
 		/* set opstring[0] = '-' to process every arguments */
-		c = getopt_long (argc, argv, "-hitdc:j:o:p:u:v:w:",
+		c = getopt_long (argc, argv, "-hitdPc:e:j:o:p:u:v:w:",
 				long_options, &option_index);
 
 		/* Detect the end of the options. */
@@ -226,9 +226,12 @@ int main(int argc, char **argv) {
 
 				break;
 
+			case 'P':
+ 				cpyarg(myargv, "-P");
+ 				break;
+
 			case 't':
 				cpyarg(myargv, "-t");
-
 				break;
 
 			case 'd':
@@ -252,6 +255,11 @@ int main(int argc, char **argv) {
 
 			case 'c':
 				cpyarg(myargv, "-c");
+				cpyarg(myargv, optarg);
+				break;
+
+			case 'e':
+				cpyarg(myargv, "-e");
 				cpyarg(myargv, optarg);
 				break;
 
@@ -333,6 +341,8 @@ void help(char *name) {
 				"  -v|--volumes-from [host-dir]:[container-dir]:[rw|ro]\n"
 				"                     Map host directories\n"
 				"  -u|--user [Username|UID]\n"
+				"  -e KEY=value       Export environment variable\n"		
+				"  -P                 Expose all ports\n"
 				"  -p nnnn            port number to expose\n"
 				"  -w [dir]           Working directory inside the container\n"
 				"  --input image_file for docker load option\n"
