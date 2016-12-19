@@ -17,7 +17,7 @@ Please refer to Docker's official documentation and tutorials on the various com
 
 The wrapper must run as suid and owned by root.
 ```
- Usage: ./udocker [ps|images|pull|run|load|save] options image command
+ Usage: ./udocker [ps|images|pull|run|load|save] options -- image command
 
  Minimumm wrapper for docker run command to run as non-root
  Options are mainly for the 'docker run` command.

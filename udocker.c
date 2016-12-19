@@ -68,8 +68,9 @@ int main(int argc, char **argv) {
 	extern int opterr;
 	opterr = 1;
 	int optname;
-	/* add 20 to for the number of option parameters thhat we will add */
-  #define MAXMYIDX 30
+	/* Limit the number of options allowed                  */
+	#define MAXMYIDX 128
+
 	char** myargv = malloc( (argc+MAXMYIDX)*sizeof(void*));
 	/* int myargc = argc+1;  */
 	while (1) {
@@ -326,7 +327,7 @@ int main(int argc, char **argv) {
 void help(char *name) {
 	printf(
 				"\n"
-				" Usage: %s [ps|images|pull|run|load|save] options image command\n"
+				" Usage: %s [ps|images|pull|run|load|save] options -- image command\n"
 				"\n"
 				" Minimumm wrapper for docker run command to run as non-root\n"
 				" Options are mainly for the 'docker run` command.\n"
